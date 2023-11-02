@@ -5,6 +5,7 @@ install.packages("wbstats")
 library(wbstats)
 library(tidyverse)
 
+Plant_Exudate_Datasheet=read.csv("data/Plant Exudate Datasheet.csv")
 # Filtering out columns I will not be analyzing -- Removing the sugar amino acid columns
 Plant_Exudate_Datasheet %>% select(-LAC, -CIT, -MAL, -FUM, -SUC)
 view(Plant_Exudate_Datasheet)
