@@ -6,12 +6,15 @@ library(wbstats)
 library(tidyverse)
 
 Plant_Exudate_Datasheet=read.csv("data/Plant Exudate Datasheet.csv")
+
 # Filtering out columns I will not be analyzing -- Removing the sugar amino acid columns
-Plant_Exudate_Datasheet %>% select(-LAC, -CIT, -MAL, -FUM, -SUC)
+dat=Plant_Exudate_Datasheet %>% select(-LAC, -CIT, -MAL, -FUM, -SUC)
 view(Plant_Exudate_Datasheet)
 
 # Turning dates-as-characters into "date" objects
-as.Date(Plant_Exudate_Datasheet$`Planting date`, format="%m/%d/%y")
+dat %>%
+  mutate(planting_date=as.Date(dat$Planting.date, format="%m/%d/%y"))
+
 as.Date(Plant_Exudate_Datasheet$`Root Weight Taken Date`, format="%m/%d/%y")
 as.Date(Plant_Exudate_Datasheet$`Date AA/OA Data Received`, format="%m%d%y")
 
