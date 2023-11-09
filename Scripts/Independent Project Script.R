@@ -8,8 +8,11 @@ library(tidyverse)
 Plant_Exudate_Datasheet=read.csv("data/Plant Exudate Datasheet.csv")
 
 # Filtering out columns I will not be analyzing -- Removing the sugar amino acid columns
-dat=Plant_Exudate_Datasheet %>% select(-LAC, -CIT, -MAL, -FUM, -SUC)
+dat=Plant_Exudate_Datasheet %>% select(-LAC, -CIT, -MAL, -FUM, -SUC) %>%
+  select()
 view(Plant_Exudate_Datasheet)
+
+
 
 # Turning dates-as-characters into "date" objects
 dat %>%
@@ -28,10 +31,10 @@ ggplot(dat, aes(x=Root.weight..g., y=Trp, color=Genotype.ID)) +
   theme(legend.position = "none")
 
 #typical boxplot
-ggplot(dat, aes(x="Genotype ID", y="Trp", fill="Genotype ID")) +
+ggplot(dat, aes(x=Genotype.ID, y=Trp, fill=Genotype.ID)) +
   geom_boxplot(notch=T) +
   scale_fill_brewer(palette="RdYlBu") +
-  ylab("Sepal Width")
+  ylab("Trp")
 
 # step 1: define the data and aesthetics
 library(ggplot2)
@@ -42,8 +45,11 @@ ggplot(dat, aes(x="Root weight (g)", y="Trp", color="Genotype ID")) + geom_point
 
 ## For next time: figure out why my graph codes are not displaying the data correctly
 
+names(dat)
 
+## Plans for next work day 11/9 -- sorting out Genotype IDs -- cutting them down to
+dat <- data.frame(
 
-
+)
 
 
