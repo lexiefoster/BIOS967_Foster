@@ -1,0 +1,104 @@
+---
+title: "Independent Project Report"
+author: "Lexie Foster"
+date: "2023-12-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+***For my independent project, I wanted to explore the relationships between amino acid exudates and plant phenotypic traits across a set of diverse maize genotypes. This data was collected in the Schachtman Lab using a semi-hydroponic root exudation collection setup.***
+
+## Part 1. Wrangling my Data
+##### To begin my project, I wanted to clean up the data in the root exudate excel sheet. I started this process by installing and downloading the packages "wbstats" and "tidyverse". 
+
+```{r, echo=TRUE}
+library(wbstats)
+library(tidyverse)
+```
+
+##### My next step was to ensure all of the columns (besides Genotype ID) are numeric -- changing cells that are not numbers into NAs.
+```{r, echo=TRUE}
+Plant_Exudate_Datasheet=read.csv("data/Plant Exudate Datasheet.csv", na.string=c("ND", "Not detected", "dat", "N/A", "No Dry Shoot", "unknown", "Label unreadable", "#VALUE!", "", "label unreadable"))
+str(Plant_Exudate_Datasheet)
+```
+
+##### Filtered out columns from the excel sheet that I would not be using in my analysis. 
+```{r, echo=TRUE}
+dat=Plant_Exudate_Datasheet %>% select(-LAC, -CIT, -MAL, -FUM, -SUC, -Planting.date, -Exudates.collection.date, -Exudates.collection.Method, -Analysis.LC.MS.Amino.Acids, -Analysis.GC.MS, -Plant.health.notes..Planting.Growth.chamber..G..Good..B..Bad..IF.EMPTY..NN, -Final.result...G.Good..B..Bad., -Notes, -More.notes, -Root.Weight.Taken.Date, -Number.of.Plants, -Rep1_AREA, -Rep1_AVG_DENSITY, -Rep1_TD_AVG, -Rep1_SKL_DEPTH, -Rep1_RTP_COUNT, -Angle, -Number.of.Plants...........Blank...2., -Rep2_AVG_DENSITY, -Rep2_TD_AVG, -Rep2_SKL_DEPTH, -Rep2_RTP_COUNT, -Angle.1, -Leaf.angle.2_I, -Leaf.angle.3_I, -Leaf.angle.2_II, -Leaf.angle.3_II, -Number.of.Plants...........Blank...2., -Number.of.leaves_I, -Number.of.Leaves_II, -Adjusted.contrast...Control...Orange., -Number.of.Plants...........Blank...2., -LCMS.GCMS.ID, -Date.AA.OA.Data.Received, -LCMS.GCMS.ID, -X..seeds.planted, -X.Final.Plants, -Number.of.Plants.1, -Number.of.Plants...........Blank...2..1)
+```
+
+## Summary of Part 1: 
+##### It was very tempting before starting this project to just sort through my data in Excel, selecting which columns and variables I wanted to keep and which to remove. BUT...I am grateful that this course gave me the room to grow more comfortable with wrangling my data in R, instead. I feel as though I am coming away from this project with a solid, foundational understanding of how to wrangle a large dataset in R. 
+
+## Part 2. Making various plots with my data. 
+##### After the completion of my data wrangling step, I wanted to begin constructing various plots to get an idea of the relationships between some of the variables in my dataset. 
+
+##### Plot 1: A plot visualizing the relationship between plant root weight, tryptophan amino acid concentration, and maize genotype. 
+```{r, echo=TRUE}
+ggplot(dat, aes(x=Root.weight..g., y=Trp, color=Genotype.ID)) +
+  geom_point() +
+  theme(legend.position = "none")
+```
+
+##### Plot 2: A plot visualizing the relationship between plant shoot weight, proline amino acid concentration, and maize genotype. 
+```{r, echo=TRUE}
+ggplot(dat, aes(x=Fresh.shoot.weight..g., y=Pro, color=Genotype.ID)) +
+  geom_point() +
+  theme(legend.position = "none")
+```
+
+##### Plot 3: A plot visualizing the relationship between plant water content, lysine amino acid concentration, and maize genotype. 
+```{r, echo=TRUE}
+ggplot(dat, aes(x=Water.content..g., y=Lys, color=Genotype.ID)) +
+  geom_point() +
+  theme(legend.position = "none")
+```
+
+##### Plot 4: Producing a linear model for the plant root and shoot weights, to visualize the direct correlation between the two phenotypic traits. 
+```{r, echo=TRUE}
+lm.mod=lm(Root.weight..g.~Fresh.shoot.weight..g., data=dat)
+summary(lm.mod)
+
+ggplot(dat, aes(x=Root.weight..g., y=Fresh.shoot.weight..g.)) +
+  geom_point() +
+  geom_smooth(method="lm")
+```
+
+## Summary of Part 2
+##### In part 2 of my project, I grew more comfortable constructing plots and selecting from many different variables to draw conclusions for relationships between 2-3 of them. Moving forward, I am confident in my ability to use ggplot to make figures and test linear relationships between 2 variables. I will now go through and plot other amino acid/plant phenotypic trait/maize genotype figures to see if any other relationships appear, like the root and shoot weight correlation. 
+
+## Part 3: Creating correlation plots using the "ggcorrplot" package
+##### For my final step in investigating the relationships between the amino acid concentrations, plant phenotypic traits, and maize genotypes in my maize exudate dataset, I wanted to construct correlation plots to further visualize which plant phenotypic traits were correlated with one another, along with the amino acids. 
+
+##### Installing and loading the "ggcorrplot" package into R studio. 
+```{r, echo=TRUE}
+library(ggcorrplot)
+```
+##### Plot 5: Correlation plot for the amino acids and plant phenotypic traits. 
+```{r, echo=TRUE}
+dat2=Plant_Exudate_Datasheet %>% select(-LAC, -CIT, -MAL, -FUM, -SUC, -Planting.date, -Exudates.collection.date, -Exudates.collection.Method, -Analysis.LC.MS.Amino.Acids, -Analysis.GC.MS, -Plant.health.notes..Planting.Growth.chamber..G..Good..B..Bad..IF.EMPTY..NN, -Final.result...G.Good..B..Bad., -Notes, -More.notes, -Root.Weight.Taken.Date, -Number.of.Plants, -Rep1_AREA, -Rep1_AVG_DENSITY, -Rep1_TD_AVG, -Rep1_SKL_DEPTH, -Rep1_RTP_COUNT, -Angle, -Number.of.Plants...........Blank...2., -Rep2_AVG_DENSITY, -Rep2_TD_AVG, -Rep2_SKL_DEPTH, -Rep2_RTP_COUNT, -Angle.1, -Leaf.angle.2_I, -Leaf.angle.3_I, -Leaf.angle.2_II, -Leaf.angle.3_II, -Number.of.Plants...........Blank...2., -Number.of.leaves_I, -Number.of.Leaves_II, -Adjusted.contrast...Control...Orange., -Number.of.Plants...........Blank...2., -LCMS.GCMS.ID, -Date.AA.OA.Data.Received, -LCMS.GCMS.ID, -X..seeds.planted, -X.Final.Plants, -Number.of.Plants.1, -Number.of.Plants...........Blank...2..1, -Genotype.ID)
+ggcorrplot(cor(dat2))
+```
+
+##### Plot 6: Correlation plot for the amino acids alone. 
+```{r, echo=TRUE}
+dat3=Plant_Exudate_Datasheet %>% select(-Leaf.Area.cm.2, -Leaf.Area.cm.2..after.adjustment., -Leaf.Area.cm.2.plant, Actual.Height_I, Actual.Height_II, -Water.content..g., Fresh.shoot.weight..g., Root.weight..g., Dry.shoot.weight..mg., Rep2_Rootlength..cm., Rep2_AREA, Rep2_DIA_STM, Rep1_Rootlength..cm., Rep1_DIA_STM, -LAC, -CIT, -MAL, -FUM, -SUC, -Planting.date, -Exudates.collection.date, -Exudates.collection.Method, -Analysis.LC.MS.Amino.Acids, -Analysis.GC.MS, -Plant.health.notes..Planting.Growth.chamber..G..Good..B..Bad..IF.EMPTY..NN, -Final.result...G.Good..B..Bad., -Notes, -More.notes, -Root.Weight.Taken.Date, -Number.of.Plants, -Rep1_AREA, -Rep1_AVG_DENSITY, -Rep1_TD_AVG, -Rep1_SKL_DEPTH, -Rep1_RTP_COUNT, -Angle, -Number.of.Plants...........Blank...2., -Rep2_AVG_DENSITY, -Rep2_TD_AVG, -Rep2_SKL_DEPTH, -Rep2_RTP_COUNT, -Angle.1, -Leaf.angle.2_I, -Leaf.angle.3_I, -Leaf.angle.2_II, -Leaf.angle.3_II, -Number.of.Plants...........Blank...2., -Number.of.leaves_I, -Number.of.Leaves_II, -Adjusted.contrast...Control...Orange., -Number.of.Plants...........Blank...2., -LCMS.GCMS.ID, -Date.AA.OA.Data.Received, -LCMS.GCMS.ID, -X..seeds.planted, -X.Final.Plants, -Number.of.Plants.1, -Number.of.Plants...........Blank...2..1, -Genotype.ID, -Rep1_DIA_STM, -Rep1_Rootlength..cm., -Rep2_DIA_STM, -Rep2_AREA, -Rep2_Rootlength..cm., -Dry.shoot.weight..mg., -Root.weight..g., -Fresh.shoot.weight..g., -Actual.Height_I, -Actual.Height_II)
+str(dat3)
+ggcorrplot(cor(dat3))
+```
+
+##### Plot 7: Correlation plot between the plant phenotypic traits. 
+```{r, echo=TRUE}
+dat4=Plant_Exudate_Datasheet %>% select(-LAC, -CIT, -MAL, -FUM, -SUC, -Planting.date, -Exudates.collection.date, -Exudates.collection.Method, -Analysis.LC.MS.Amino.Acids, -Analysis.GC.MS, -Plant.health.notes..Planting.Growth.chamber..G..Good..B..Bad..IF.EMPTY..NN, -Final.result...G.Good..B..Bad., -Notes, -More.notes, -Root.Weight.Taken.Date, -Number.of.Plants, -Rep1_AREA, -Rep1_AVG_DENSITY, -Rep1_TD_AVG, -Rep1_SKL_DEPTH, -Rep1_RTP_COUNT, -Angle, -Number.of.Plants...........Blank...2., -Rep2_AVG_DENSITY, -Rep2_TD_AVG, -Rep2_SKL_DEPTH, -Rep2_RTP_COUNT, -Angle.1, -Leaf.angle.2_I, -Leaf.angle.3_I, -Leaf.angle.2_II, -Leaf.angle.3_II, -Number.of.Plants...........Blank...2., -Number.of.leaves_I, -Number.of.Leaves_II, -Adjusted.contrast...Control...Orange., -Number.of.Plants...........Blank...2., -LCMS.GCMS.ID, -Date.AA.OA.Data.Received, -LCMS.GCMS.ID, -X..seeds.planted, -X.Final.Plants, -Number.of.Plants.1, -Number.of.Plants...........Blank...2..1, -GABA, -His, -Ile, -Leu, -Lys, -Phe, -Pro, -Trp, -Tyr, -Val, -Genotype.ID)
+ggcorrplot(cor(dat4))
+```
+
+## Summary of Part 3
+##### In part 3, I gained confidence in using a new package and figuring out some of the nuances that came with making sure my data was suitable for use in this package. One example of this was ensuring that all of my values were numerical, instead of characters. I was happy to see relationships between some of the amino acid concentrations, however, I feel as though I may need to work on the correlation plot for the plant phenotypic traits, as I would expect to have seen some correlations between some of these variables (ex. root and shoot weights). 
+
+## Summary of Whole Independent Project
+##### Overall, I am pretty satisfied with the knowledge and confidence I am taking away from this course. I thoroughly enjoyed the class and appreciate the care and time Dr. Shizuka placed into his students' learning over the course of the semester. I am excited to continue to use and learn in R and utilize it in my research. Thanks for a great course, Dr. Shizuka! :) 
+
